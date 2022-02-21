@@ -4,7 +4,7 @@
       <nav>
         <span>Weather City</span>
         <div class="right">
-          <i class="far fa-edit"></i>
+          <i class="far fa-edit" @click="$emit('edit-city')"></i>
           <i class="fas fa-sync"></i>
           <i class="far fa-plus" @click="$emit('add-city')"></i>
         </div>

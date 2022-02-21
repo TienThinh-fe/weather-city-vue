@@ -5,7 +5,7 @@
       v-for="(city, index) in props.cities"
       :key="index"
     >
-      <city-preview :city="city"></city-preview>
+      <city-preview :city="city" :edit="edit"></city-preview>
     </div>
   </div>
 </template>
@@ -15,7 +15,7 @@ import { defineProps } from "vue";
 
 import CityPreview from "../components/CityPreview.vue";
 
-const props = defineProps(["cities"]);
+const props = defineProps(["cities", "edit"]);
 </script>
 
 <style lang="scss" scoped>

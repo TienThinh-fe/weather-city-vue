@@ -5,8 +5,8 @@
       @close-modal="toggleModal"
       :API_KEY="API_KEY"
     ></modal>
-    <navigation @add-city="toggleModal"></navigation>
-    <router-view :cities="cities"></router-view>
+    <navigation @add-city="toggleModal" @edit-city="toggleEdit"></navigation>
+    <router-view :cities="cities" :edit="edit"></router-view>
   </div>
 </template>
 
@@ -28,14 +28,19 @@ import Modal from "./components/Modal.vue";
 const API_KEY = ref(process.env.VUE_APP_WEATHER_API_KEY);
 const cities = ref([]);
 const modalOpen = ref(null);
+const edit = ref(null);
 
 function getCityWeather() {
   const q = query(collection(database, "cities"));
 
-  return onSnapshot(q, async (querySnapshot) => {
+  onSnapshot(q, async (querySnapshot) => {
+    console.log("GET DATA FROM FIREBASE");
+    cities.value = [];
+    console.log("CITIES 1: ", cities.value);
     try {
       cities.value = [];
       querySnapshot.forEach(async (document) => {
+        console.log("CITIES 2: ", cities.value);
         const response = await axios.get(
           `https://api.openweathermap.org/data/2.5/weather?q=${
             document.data().city
@@ -45,10 +50,12 @@ function getCityWeather() {
         const weather = response.data;
 
         await updateDoc(doc(database, "cities", document.id), {
+          id: document.id,
           currentWeather: weather,
         });
 
         cities.value.push(document.data());
+        console.log("CITIES 3: ", cities.value);
       });
     } catch (error) {
       console.error(error);
@@ -58,6 +65,10 @@ function getCityWeather() {
 
 function toggleModal() {
   modalOpen.value = !modalOpen.value;
+}
+
+function toggleEdit() {
+  edit.value = !edit.value;
 }
 
 getCityWeather();

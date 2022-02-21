@@ -1,5 +1,11 @@
 <template>
   <div class="city">
+    <i
+      v-if="edit"
+      class="far fa-trash-alt edit"
+      ref="edit"
+      @click="deleteCity"
+    ></i>
     <span>{{ props.city.city }}</span>
     <div class="weather">
       <span>{{ temperature }} &deg;C</span>
@@ -14,8 +20,11 @@
 
 <script setup>
 import { defineProps, computed } from "vue";
+import { doc, deleteDoc } from "firebase/firestore";
 
-const props = defineProps(["city"]);
+import { database } from "../firebase/firebase.util";
+
+const props = defineProps(["city", "edit"]);
 
 const temperature = computed(() => {
   return `${Math.round(props.city.currentWeather.main.temp)}`;
@@ -28,6 +37,10 @@ const conditionImg = computed(() => {
 const conditionVideo = computed(() => {
   return require(`../../public/videos/${props.city.currentWeather.weather[0].icon}.mp4`);
 });
+
+async function deleteCity() {
+  return await deleteDoc(doc(database, "cities", props.city.id));
+}
 </script>
 
 <style lang="scss" scoped>
@@ -40,6 +53,17 @@ const conditionVideo = computed(() => {
   min-height: 250px;
   color: #fff;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+  .edit {
+    border-radius: 0px 15px 0 0;
+    border: 10px solid rgb(77, 77, 77);
+    background-color: rgb(77, 77, 77);
+    z-index: 1;
+    font-size: 16px;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+  }
 
   span {
     z-index: 1;
