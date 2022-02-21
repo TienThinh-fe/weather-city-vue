@@ -5,7 +5,12 @@
       v-for="(city, index) in props.cities"
       :key="index"
     >
-      <city-preview :city="city" :edit="edit"></city-preview>
+      <city-preview
+        :city="city.city"
+        :current-weather="city.currentWeather"
+        :id="city.id"
+        :edit="props.edit"
+      ></city-preview>
     </div>
   </div>
 </template>

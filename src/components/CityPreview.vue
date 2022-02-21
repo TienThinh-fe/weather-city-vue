@@ -1,12 +1,12 @@
 <template>
   <div class="city">
     <i
-      v-if="edit"
+      v-if="props.edit"
       class="far fa-trash-alt edit"
       ref="edit"
       @click="deleteCity"
     ></i>
-    <span>{{ props.city.city }}</span>
+    <span>{{ props.city }}</span>
     <div class="weather">
       <span>{{ temperature }} &deg;C</span>
       <img :src="conditionImg" alt="" />
@@ -24,22 +24,22 @@ import { doc, deleteDoc } from "firebase/firestore";
 
 import { database } from "../firebase/firebase.util";
 
-const props = defineProps(["city", "edit"]);
+const props = defineProps(["id", "current-weather", "city", "edit"]);
 
 const temperature = computed(() => {
-  return `${Math.round(props.city.currentWeather.main.temp)}`;
+  return `${Math.round(props.currentWeather.main.temp)}`;
 });
 
 const conditionImg = computed(() => {
-  return require(`../../public/conditions/${props.city.currentWeather.weather[0].icon}.svg`);
+  return require(`../../public/conditions/${props.currentWeather.weather[0].icon}.svg`);
 });
 
 const conditionVideo = computed(() => {
-  return require(`../../public/videos/${props.city.currentWeather.weather[0].icon}.mp4`);
+  return require(`../../public/videos/${props.currentWeather.weather[0].icon}.mp4`);
 });
 
 async function deleteCity() {
-  return await deleteDoc(doc(database, "cities", props.city.id));
+  return await deleteDoc(doc(database, "cities", props.id));
 }
 </script>
 
