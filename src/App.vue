@@ -5,13 +5,29 @@
       @close-modal="toggleModal"
       :API_KEY="API_KEY"
     ></modal>
-    <navigation @add-city="toggleModal" @edit-city="toggleEdit"></navigation>
-    <router-view :cities="cities" :edit="edit"></router-view>
+    <navigation
+      @add-city="toggleModal"
+      @edit-city="toggleEdit"
+      :addCityActive="addCityActive"
+      :isDay="isDay"
+      :isNight="isNight"
+    ></navigation>
+    <router-view
+      :cities="cities"
+      :edit="edit"
+      :API_KEY="API_KEY"
+      @is-day="dayTime"
+      @is-night="nightTime"
+      @reset-days="resetDays"
+      :isDay="isDay"
+      :isNight="isNight"
+    ></router-view>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import axios from "axios";
 import { collection, query, onSnapshot } from "firebase/firestore";
 
@@ -23,6 +39,11 @@ const API_KEY = ref(process.env.VUE_APP_WEATHER_API_KEY);
 const cities = ref([]);
 const modalOpen = ref(null);
 const edit = ref(false);
+const addCityActive = ref(null);
+const isDay = ref(null);
+const isNight = ref(null);
+
+const route = useRoute();
 
 function getCityWeather() {
   const q = query(collection(database, "cities"));
@@ -57,6 +78,32 @@ function toggleEdit() {
   edit.value = !edit.value;
 }
 
+function checkRoute() {
+  if (route.path === "/") {
+    addCityActive.value = true;
+  } else {
+    addCityActive.value = false;
+  }
+}
+
+function dayTime() {
+  isDay.value = !isDay.value;
+}
+
+function nightTime() {
+  isNight.value = !isNight.value;
+}
+
+function resetDays() {
+  isDay.value = false;
+  isNight.value = false;
+}
+
+watch(route, () => {
+  checkRoute();
+});
+
+checkRoute();
 getCityWeather();
 </script>
 
@@ -78,5 +125,18 @@ getCityWeather();
   .container {
     padding: 0 20px;
   }
+}
+
+.day {
+  transition: 500ms ease all;
+  background-color: rgb(59, 150, 249);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.night {
+  transition: 500ms ease all;
+  background-color: rgb(20, 42, 95);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 </style>

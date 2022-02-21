@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header class="container add-city">
+    <header v-if="props.addCityActive" class="container add-city">
       <nav>
         <span>Weather City</span>
         <div class="right">
@@ -10,23 +10,42 @@
         </div>
       </nav>
     </header>
+    <header
+      v-else
+      class="container"
+      :class="{ day: props.isDay, night: props.isNight }"
+    >
+      <nav>
+        <router-link to="/" class="router-link">
+          <i class="fa-solid fa-chevron-left"></i>
+        </router-link>
+        <span>
+          {{ new Date().toLocaleString("en-us", { weekday: "short" }) }},
+          {{ new Date().toLocaleString("en-us", { month: "short" }) }}
+          {{ new Date().toLocaleString("en-us", { day: "2-digit" }) }}
+        </span>
+        <span>&deg; C</span>
+      </nav>
+    </header>
   </div>
 </template>
 
 <script setup>
+import { defineProps } from "vue";
+
+const props = defineProps(["addCityActive", "isDay", "isNight"]);
 </script>
 
 <style lang="scss" scoped>
 .add-city {
   background-color: #313640;
 }
+
 header {
   z-index: 99;
   position: fixed;
   max-width: 1024px;
   width: 100%;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   nav {
     display: flex;
     justify-content: space-between;
@@ -48,6 +67,12 @@ header {
     i:nth-child(3) {
       font-weight: 600;
     }
+  }
+  .edit-active {
+    color: rgba(210, 75, 75, 1);
+  }
+  .router-link {
+    color: #fff;
   }
 }
 </style>

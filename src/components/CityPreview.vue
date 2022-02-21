@@ -1,9 +1,9 @@
 <template>
-  <div class="city">
+  <div class="city" @click="goToDetails">
     <i
       v-if="props.edit"
       class="far fa-trash-alt edit"
-      ref="edit"
+      ref="deleteButton"
       @click="deleteCity"
     ></i>
     <span>{{ props.city }}</span>
@@ -19,12 +19,17 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from "vue";
+import { defineProps, computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import { doc, deleteDoc } from "firebase/firestore";
 
 import { database } from "../firebase/firebase.util";
 
 const props = defineProps(["id", "current-weather", "city", "edit"]);
+
+const deleteButton = ref(null);
+
+const router = useRouter();
 
 const temperature = computed(() => {
   return `${Math.round(props.currentWeather.main.temp)}`;
@@ -40,6 +45,14 @@ const conditionVideo = computed(() => {
 
 async function deleteCity() {
   return await deleteDoc(doc(database, "cities", props.id));
+}
+
+function goToDetails(event) {
+  if (event.target === deleteButton.value) {
+    // do nothing
+  } else {
+    router.push(`/weather/${props.city}`);
+  }
 }
 </script>
 
